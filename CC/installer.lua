@@ -2,7 +2,7 @@ shell.run("mkdir", "ui")
 shell.run("mkdir", "network")
 shell.run("mkdir", "pages")
 
-shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/main/CC/main.lua", "main.lua")
+shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/refs/heads/main/CC/main.lua", "main.lua")
 shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/main/CC/ui/navbar.lua", "ui/navbar.lua")
 shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/main/CC/ui/keypad.lua", "ui/keypad.lua")
 shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/main/CC/network/sync.lua", "network/sync.lua")
