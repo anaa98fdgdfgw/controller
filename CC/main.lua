@@ -29,8 +29,8 @@ end
 local keypad = require("ui.keypad")(main)
 keypad:setVisible(false)
 
--- Navbar adaptative
-local navbar = main:addPane()
+-- Navbar adaptative (utilise bien addFrame() pour Basalt2)
+local navbar = main:addFrame()
 navbar:setPosition(1, "parent.h")
 navbar:setSize("parent.w", 1)
 navbar:setBackground(colors.gray)
@@ -44,15 +44,18 @@ end
 -- Ajout dynamique des boutons de la navbar (adaptatif)
 local function drawNavbar()
     navbar:removeChildren()
+    local w = navbar:getWidth()
+    local btnW = math.max(8, math.floor((w - 14) / #pageNames))
     local x = 2
-    local btnW = math.max(8, math.floor((navbar:getWidth() - 12) / #pageNames))
     for i, name in ipairs(pageNames) do
         local btn = navbar:addButton()
         btn:setText(name)
         btn:setPosition(x, 1)
         btn:setSize(btnW, 1)
-        if i == 1 then
+        if pages[i]:isVisible() then
             btn:setForeground(colors.yellow):setBackground(colors.blue)
+        else
+            btn:setForeground(colors.white):setBackground(colors.gray)
         end
         btn:onClick(function()
             showPage(i)
@@ -63,9 +66,9 @@ local function drawNavbar()
     -- Keypad bouton à droite
     local keypadBtn = navbar:addButton()
     keypadBtn:setText(keypad:isVisible() and "[Keypad:O]" or "[Keypad:F]")
-    keypadBtn:setPosition(navbar:getWidth()-12, 1)
+    keypadBtn:setPosition(w-12, 1)
     keypadBtn:setSize(12, 1)
-    keypadBtn:setForeground(colors.lime)
+    keypadBtn:setForeground(colors.lime):setBackground(colors.gray)
     keypadBtn:onClick(function()
         keypad:setVisible(not keypad:isVisible())
         drawNavbar()
