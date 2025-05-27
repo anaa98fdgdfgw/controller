@@ -1,56 +1,28 @@
-local M = {}
+return function(parent)
+    local basalt = require("basalt")
+    local win = parent:addFrame()
+    win:setSize(13, 9)
+    win:setPosition("parent.w-15", 2)
+    win:setBackground(colors.lightGray)
+    win:setVisible(false)
 
-M.keys = {
-    {"1", "2", "3"},
-    {"4", "5", "6"},
-    {"7", "8", "9"},
-    {"*", "0", "#"}
-}
-M.x0, M.y0 = 2, 2
-
-function M.draw(open, target)
-    target = target or term
-    if not open then return end
+    local keys = {
+        {"1", "2", "3"},
+        {"4", "5", "6"},
+        {"7", "8", "9"},
+        {"*", "0", "#"}
+    }
     for y=1,4 do
         for x=1,3 do
-            target.setCursorPos(M.x0+(x-1)*4, M.y0+(y-1)*2)
-            if target.setBackgroundColor then target.setBackgroundColor(colors.lightGray) end
-            if target.setTextColor then target.setTextColor(colors.black) end
-            target.write(" "..M.keys[y][x].." ")
+            local btn = win:addButton()
+            btn:setText(keys[y][x])
+            btn:setPosition(2+(x-1)*4, 1+(y-1)*2)
+            btn:setSize(3,1)
+            btn:onClick(function()
+                basalt.debug("Touche keypad : "..keys[y][x])
+            end)
         end
     end
-    if target.setBackgroundColor then target.setBackgroundColor(colors.black) end
-end
 
-function M.isOnKeypad(x, y, target)
-    target = target or term
-    for ky=1,4 do
-        for kx=1,3 do
-            local px = M.x0+(kx-1)*4
-            local py = M.y0+(ky-1)*2
-            if x >= px and x <= px+2 and y == py then
-                return true
-            end
-        end
-    end
-    return false
+    return win
 end
-
-function M.handleClick(x, y, target)
-    target = target or term
-    for ky=1,4 do
-        for kx=1,3 do
-            local px = M.x0+(kx-1)*4
-            local py = M.y0+(ky-1)*2
-            if x >= px and x <= px+2 and y == py then
-                -- Affichage temporaire sur la cible
-                target.setCursorPos(1,1)
-                target.write("Touche keypad : " .. M.keys[ky][kx] .. "  ")
-                return M.keys[ky][kx]
-            end
-        end
-    end
-    return nil
-end
-
-return M
