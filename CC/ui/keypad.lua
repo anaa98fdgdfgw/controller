@@ -3,7 +3,7 @@ return function(parent)
     win:setSize(13, 9)
     win:setPosition("parent.w-15", 2)
     win:setBackground(colors.lightGray)
-    win:setZIndex(100)
+    -- win:setZIndex(100) -- SUPPRIMÉ, car cette méthode n'existe pas dans Basalt2
     win:setVisible(false)
 
     local keys = {
