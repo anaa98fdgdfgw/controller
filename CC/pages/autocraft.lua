@@ -1,30 +1,29 @@
-local M = {}
+return function(parent)
+    local frame = parent:addFrame()
+    frame:setPosition(1, 1)
+    frame:setSize("parent.w", "parent.h")
+    frame:setBackground(colors.black)
 
-M.patterns = {
-    {name="Pattern Iron", enabled=true},
-    {name="Pattern Gold", enabled=false},
-    {name="Pattern Diamond", enabled=true}
-}
+    local patterns = {
+        {name="Iron", state=true},
+        {name="Gold", state=false},
+        {name="Diamond", state=true}
+    }
 
-function M.draw()
-    print("=== Autocraft AE2 ===\n")
-    for i, p in ipairs(M.patterns) do
-        local status = p.enabled and "ACTIF" or "INACTIF"
-        local color = p.enabled and colors.green or colors.red
-        term.setTextColor(color)
-        print(string.format("[%d] %s : %s", i, p.name, status))
+    local y = 2
+    frame:addLabel():setText("=== Autocraft AE2 ==="):setPosition(2, y):setForeground(colors.cyan)
+    for i, pat in ipairs(patterns) do
+        local lab = frame:addButton()
+            :setText("["..i.."] Pattern "..pat.name.." : "..(pat.state and "ACTIF" or "INACTIF"))
+            :setPosition(2, y+1+i):setSize(30,1)
+        lab:setForeground(pat.state and colors.green or colors.red)
+        lab:onClick(function()
+            pat.state = not pat.state
+            lab:setText("["..i.."] Pattern "..pat.name.." : "..(pat.state and "ACTIF" or "INACTIF"))
+            lab:setForeground(pat.state and colors.green or colors.red)
+        end)
     end
-    term.setTextColor(colors.white)
-    print("\nCliquez sur un pattern pour activer/désactiver.")
-end
+    frame:addLabel():setText("Cliquez sur un pattern pour activer/désactiver."):setPosition(2, y+6):setForeground(colors.white)
 
-function M.handleClick(x, y)
-    local idx = y-2
-    if idx >= 1 and idx <= #M.patterns then
-        local p = M.patterns[idx]
-        p.enabled = not p.enabled
-        -- Ajoute ici la logique d'appel au système AE2 si besoin
-    end
+    return frame
 end
-
-return M

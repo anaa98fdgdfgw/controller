@@ -1,37 +1,34 @@
-local M = {}
+return function(parent)
+    local frame = parent:addFrame()
+    frame:setPosition(1, 1)
+    frame:setSize("parent.w", "parent.h")
+    frame:setBackground(colors.black)
 
-M.usines = {
-    {name="Usine 1", state=false, side="back"},
-    {name="Usine 2", state=false, side="right"},
-    {name="Usine 3", state=false, side="left"}
-}
+    local usines = {
+        {name="Usine 1", state=false, side="back"},
+        {name="Usine 2", state=false, side="right"},
+        {name="Usine 3", state=false, side="left"}
+    }
 
-function M.draw(target)
-    target = target or term
-    target.setCursorPos(1,2)
-    if target.setTextColor then target.setTextColor(colors.white) end
-    target.write("=== Dashboard - Usines ===")
-    for i, usine in ipairs(M.usines) do
-        local status = usine.state and "ON" or "OFF"
-        local color = usine.state and colors.green or colors.red
-        if target.setTextColor then target.setTextColor(color) end
-        target.setCursorPos(1, 2+i)
-        target.write(string.format("[%d] %s : %s", i, usine.name, status))
+    local y = 2
+    frame:addLabel():setText("=== Dashboard - Usines ==="):setPosition(2, y):setForeground(colors.white)
+
+    for i, usine in ipairs(usines) do
+        local lab = frame:addButton():setText(
+            "["..i.."] "..usine.name.." : "..(usine.state and "ON" or "OFF"))
+            :setPosition(2, y+1+i):setSize(20,1)
+        lab:setForeground(usine.state and colors.green or colors.red)
+        lab:onClick(function()
+            usine.state = not usine.state
+            lab:setText("["..i.."] "..usine.name.." : "..(usine.state and "ON" or "OFF"))
+            lab:setForeground(usine.state and colors.green or colors.red)
+            if peripheral and redstone then
+                redstone.setOutput(usine.side, usine.state)
+            end
+        end)
     end
-    if target.setTextColor then target.setTextColor(colors.white) end
-    target.setCursorPos(1,6)
-    target.write("Cliquez sur un nom pour ON/OFF.")
-end
 
-function M.handleClick(x, y, target)
-    local idx = y-2
-    if idx >= 1 and idx <= #M.usines then
-        local usine = M.usines[idx]
-        usine.state = not usine.state
-        if peripheral and redstone then
-            redstone.setOutput(usine.side, usine.state)
-        end
-    end
-end
+    frame:addLabel():setText("Cliquez sur un nom pour ON/OFF."):setPosition(2, y+6):setForeground(colors.white)
 
-return M
+    return frame
+end

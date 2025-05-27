@@ -1,13 +1,11 @@
-local M = {}
+return function(parent)
+    local frame = parent:addFrame()
+    frame:setPosition(1, 1)
+    frame:setSize("parent.w", "parent.h")
+    frame:setBackground(colors.black)
 
-function M.draw()
-    print("=== Contrôle Big Reactor ===\n")
-    print("Statut : (à compléter avec l'intégration du script)")
-    print("Boutons ON/OFF, monitoring, etc.")
+    frame:addLabel():setText("=== Reactor Control ==="):setPosition(2,2):setForeground(colors.orange)
+    -- Ajoute ici le contrôle de ton réacteur
+
+    return frame
 end
-
-function M.handleClick(x, y)
-    -- À compléter avec la logique de gestion du reactor
-end
-
-return M
