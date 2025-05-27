@@ -14,7 +14,7 @@ shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/ma
 
 -- Téléchargement de Basalt 2 (officiel)
 print("[Installer] Téléchargement de Basalt 2 (UI)...")
-shell.run("wget", "https://pastebin.com/raw/P8jHhS2K", "basalt.lua")
+shell.run("wget run https://raw.githubusercontent.com/Pyroxenium/Basalt2/main/install.lua Basalt2.lua")
 print("[Installer] Basalt 2 installé avec succès !")
 
 print("Installation terminée ! Utilise la commande main pour démarrer.")
