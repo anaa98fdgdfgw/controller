@@ -22,7 +22,8 @@ function M.draw(open, target)
     if target.setBackgroundColor then target.setBackgroundColor(colors.black) end
 end
 
-function M.isOnKeypad(x, y)
+function M.isOnKeypad(x, y, target)
+    target = target or term
     for ky=1,4 do
         for kx=1,3 do
             local px = M.x0+(kx-1)*4
@@ -35,13 +36,16 @@ function M.isOnKeypad(x, y)
     return false
 end
 
-function M.handleClick(x, y)
+function M.handleClick(x, y, target)
+    target = target or term
     for ky=1,4 do
         for kx=1,3 do
             local px = M.x0+(kx-1)*4
             local py = M.y0+(ky-1)*2
             if x >= px and x <= px+2 and y == py then
-                print("Touche keypad :", M.keys[ky][kx])
+                -- Affichage temporaire sur la cible
+                target.setCursorPos(1,1)
+                target.write("Touche keypad : " .. M.keys[ky][kx] .. "  ")
                 return M.keys[ky][kx]
             end
         end

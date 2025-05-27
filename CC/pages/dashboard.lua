@@ -7,7 +7,9 @@ M.usines = {
 }
 
 function M.draw(target)
+    target = target or term
     target.setCursorPos(1,2)
+    if target.setTextColor then target.setTextColor(colors.white) end
     target.write("=== Dashboard - Usines ===")
     for i, usine in ipairs(M.usines) do
         local status = usine.state and "ON" or "OFF"
@@ -21,7 +23,7 @@ function M.draw(target)
     target.write("Cliquez sur un nom pour ON/OFF.")
 end
 
-function M.handleClick(x, y)
+function M.handleClick(x, y, target)
     local idx = y-2
     if idx >= 1 and idx <= #M.usines then
         local usine = M.usines[idx]

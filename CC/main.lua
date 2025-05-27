@@ -30,40 +30,40 @@ local pageNames = {"Dashboard", "Autocraft", "Turtle Map", "Turtle Analyse", "Re
 local currentPage = 1
 local keypadOpen = false
 
--- Fonction pour dessiner l'UI sur les deux supports
-local function draw()
-    -- Terminal
-    term.clear()
-    term.setCursorPos(1,1)
-    pages[currentPage].draw(term)
-    navbar.draw(currentPage, pageNames, keypadOpen, term)
-    if keypadOpen then
-        keypad.draw(true, term)
+-- Fonction pour dessiner l'UI sur un écran
+local function drawOn(target)
+    if not target then return end
+    target.clear()
+    target.setCursorPos(1,1)
+    if pages[currentPage].draw then
+        pages[currentPage].draw(target)
     end
+    if navbar.draw then
+        navbar.draw(currentPage, pageNames, keypadOpen, target)
+    end
+    if keypadOpen and keypad.draw then
+        keypad.draw(true, target)
+    end
+end
 
-    -- Monitor
+-- Fonction principale de dessin (terminal + monitor si dispo)
+local function draw()
+    drawOn(term)
     if hasMonitor then
-        mon.clear()
-        mon.setCursorPos(1,1)
-        pages[currentPage].draw(mon)
-        navbar.draw(currentPage, pageNames, keypadOpen, mon)
-        if keypadOpen then
-            keypad.draw(true, mon)
-        end
+        drawOn(mon)
     end
 end
 
 -- Gestion du clic pour les deux écrans
 local function handleClick(x, y, onMonitor)
-    local w, h = term.getSize()
     local target = term
     if onMonitor and hasMonitor then
-        w, h = mon.getSize()
         target = mon
     end
+    local w, h = target.getSize()
     -- NavBar (en bas)
     if y == h then
-        local navResult, navType = navbar.handleClick(x, currentPage, #pages, keypadOpen)
+        local navResult, navType = navbar.handleClick(x, currentPage, #pages, keypadOpen, target)
         if navType == "page" then
             currentPage = navResult
         elseif navType == "keypad" then
@@ -72,13 +72,13 @@ local function handleClick(x, y, onMonitor)
         return
     end
     -- Keypad
-    if keypadOpen and keypad.isOnKeypad(x, y) then
-        keypad.handleClick(x, y)
+    if keypadOpen and keypad.isOnKeypad(x, y, target) then
+        keypad.handleClick(x, y, target)
         return
     end
     -- Page courante
     if pages[currentPage].handleClick then
-        pages[currentPage].handleClick(x, y)
+        pages[currentPage].handleClick(x, y, target)
     end
 end
 

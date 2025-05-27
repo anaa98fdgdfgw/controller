@@ -25,14 +25,17 @@ function M.draw(currentPage, pages, keypadOpen, target)
     end
     if target.setTextColor then target.setTextColor(colors.lime) end
     if target.setBackgroundColor then target.setBackgroundColor(colors.gray) end
-    target.setCursorPos(w-11, h)
-    target.write(keypadOpen and "[Keypad:O]" or "[Keypad:F]")
+    if w > 11 then
+        target.setCursorPos(w-11, h)
+        target.write(keypadOpen and "[Keypad:O]" or "[Keypad:F]")
+    end
     if target.setTextColor then target.setTextColor(colors.white) end
     if target.setBackgroundColor then target.setBackgroundColor(colors.black) end
 end
 
-function M.handleClick(x, currentPage, nbPages, keypadOpen)
-    local w, h = term.getSize()
+function M.handleClick(x, currentPage, nbPages, keypadOpen, target)
+    target = target or term
+    local w, h = target.getSize()
     if x >= w-10 and x <= w then
         return not keypadOpen, "keypad"
     end
