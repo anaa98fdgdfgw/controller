@@ -1,82 +1,101 @@
-local basalt = require("basalt")
+-- Affichage et détection tactile sur monitor ET terminal/pocket
 
+-- Détection du monitor externe
+local mon = peripheral.find("monitor")
+local hasMonitor = mon ~= nil
+
+if hasMonitor then
+    mon.setTextScale(1)
+    mon.clear()
+    mon.setCursorPos(1,1)
+    mon.write("Monitor détecté !\n")
+    mon.write("L'affichage sera aussi sur ce grand écran.\n")
+else
+    print("Aucun monitor externe détecté.")
+    print("L'affichage reste sur le terminal/pocket.")
+end
+
+-- Importation des modules/pages
+local navbar = require("ui/navbar")
+local keypad = require("ui/keypad")
+local sync = require("network/sync")
+local dashboard = require("pages/dashboard")
+local autocraft = require("pages/autocraft")
+local turtle_map = require("pages/turtle_map")
+local turtle_analyse = require("pages/turtle_analyse")
+local reactor = require("pages/reactor")
+
+local pages = {dashboard, autocraft, turtle_map, turtle_analyse, reactor}
 local pageNames = {"Dashboard", "Autocraft", "Turtle Map", "Turtle Analyse", "Reactor"}
-local pageModules = {
-    require("pages.dashboard"),
-    require("pages.autocraft"),
-    require("pages.turtle_map"),
-    require("pages.turtle_analyse"),
-    require("pages.reactor")
-}
+local currentPage = 1
+local keypadOpen = false
 
-local main = basalt.createFrame()
-main:setSize("parent.w", "parent.h")
-
--- Zone centrale pour les pages
-local content = main:addFrame()
-content:setPosition(1, 1)
-content:setSize("parent.w", "parent.h-1")
-content:setBackground(colors.black)
-
--- Construction des pages (chacune est un frame Basalt)
-local pages = {}
-for i, mod in ipairs(pageModules) do
-    pages[i] = mod(content)
-    pages[i]:setVisible(i == 1)
-end
-
--- Keypad flottant
-local keypad = require("ui.keypad")(main)
-keypad:setVisible(false)
-
--- Navbar adaptative (utilise bien addFrame() pour Basalt2)
-local navbar = main:addFrame()
-navbar:setPosition(1, "parent.h")
-navbar:setSize("parent.w", 1)
-navbar:setBackground(colors.gray)
-
-local function showPage(idx)
-    for i, page in ipairs(pages) do
-        page:setVisible(i == idx)
+-- Fonction pour dessiner l'UI sur un écran
+local function drawOn(target)
+    if not target then return end
+    target.clear()
+    target.setCursorPos(1,1)
+    if pages[currentPage].draw then
+        pages[currentPage].draw(target)
+    end
+    if navbar.draw then
+        navbar.draw(currentPage, pageNames, keypadOpen, target)
+    end
+    if keypadOpen and keypad.draw then
+        keypad.draw(true, target)
     end
 end
 
--- Ajout dynamique des boutons de la navbar (adaptatif)
-local function drawNavbar()
-    navbar:removeChildren()
-    local w = navbar:getWidth()
-    local btnW = math.max(8, math.floor((w - 14) / #pageNames))
-    local x = 2
-    for i, name in ipairs(pageNames) do
-        local btn = navbar:addButton()
-        btn:setText(name)
-        btn:setPosition(x, 1)
-        btn:setSize(btnW, 1)
-        if pages[i]:isVisible() then
-            btn:setForeground(colors.yellow):setBackground(colors.blue)
-        else
-            btn:setForeground(colors.white):setBackground(colors.gray)
+-- Fonction principale de dessin (terminal + monitor si dispo)
+local function draw()
+    drawOn(term)
+    if hasMonitor then
+        drawOn(mon)
+    end
+end
+
+-- Gestion du clic pour les deux écrans
+local function handleClick(x, y, onMonitor)
+    local target = term
+    if onMonitor and hasMonitor then
+        target = mon
+    end
+    local w, h = target.getSize()
+    -- NavBar (en bas)
+    if y == h then
+        local navResult, navType = navbar.handleClick(x, currentPage, #pages, keypadOpen, target)
+        if navType == "page" then
+            currentPage = navResult
+        elseif navType == "keypad" then
+            keypadOpen = not keypadOpen
         end
-        btn:onClick(function()
-            showPage(i)
-            drawNavbar()
-        end)
-        x = x + btnW + 1
+        return
     end
-    -- Keypad bouton à droite
-    local keypadBtn = navbar:addButton()
-    keypadBtn:setText(keypad:isVisible() and "[Keypad:O]" or "[Keypad:F]")
-    keypadBtn:setPosition(w-12, 1)
-    keypadBtn:setSize(12, 1)
-    keypadBtn:setForeground(colors.lime):setBackground(colors.gray)
-    keypadBtn:onClick(function()
-        keypad:setVisible(not keypad:isVisible())
-        drawNavbar()
-    end)
+    -- Keypad
+    if keypadOpen and keypad.isOnKeypad(x, y, target) then
+        keypad.handleClick(x, y, target)
+        return
+    end
+    -- Page courante
+    if pages[currentPage].handleClick then
+        pages[currentPage].handleClick(x, y, target)
+    end
 end
 
-navbar:onChange(drawNavbar)
-main:onChange(drawNavbar)
-drawNavbar()
+local function mainLoop()
+    while true do
+        draw()
+        local event, p1, p2, p3 = os.pullEvent()
+        if event == "mouse_click" then
+            -- Clic sur le terminal ou pocket (p2, p3 = x, y)
+            handleClick(p2, p3, false)
+        elseif event == "monitor_touch" then
+            -- Clic tactile sur le monitor (p2, p3 = x, y)
+            handleClick(p2, p3, true)
+        elseif event == "char" and p1 == "q" then
+            break
+        end
+    end
+end
 
-basalt.autoUpdate()
+mainLoop()
