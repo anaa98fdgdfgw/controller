@@ -12,4 +12,9 @@ shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/ma
 shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/main/CC/pages/turtle_analyse.lua", "pages/turtle_analyse.lua")
 shell.run("wget", "https://raw.githubusercontent.com/anaa98fdgdfgw/controller/main/CC/pages/reactor.lua", "pages/reactor.lua")
 
+-- Téléchargement de Basalt 2 (officiel)
+print("[Installer] Téléchargement de Basalt 2 (UI)...")
+shell.run("wget", "https://pastebin.com/raw/P8jHhS2K", "basalt.lua")
+print("[Installer] Basalt 2 installé avec succès !")
+
 print("Installation terminée ! Utilise la commande main pour démarrer.")
