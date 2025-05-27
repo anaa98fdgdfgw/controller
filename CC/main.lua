@@ -30,56 +30,22 @@ local pageNames = {"Dashboard", "Autocraft", "Turtle Map", "Turtle Analyse", "Re
 local currentPage = 1
 local keypadOpen = false
 
--- Utilitaires d'affichage double
-local function termClear()
-    term.clear()
-    term.setCursorPos(1,1)
-end
-local function monClear()
-    if hasMonitor then
-        mon.clear()
-        mon.setCursorPos(1,1)
-    end
-end
-local function bothClear()
-    termClear()
-    monClear()
-end
-
-local function termWrite(str)
-    print(str)
-end
-local function monWrite(str)
-    if hasMonitor then
-        local x, y = mon.getCursorPos()
-        mon.write(str)
-        -- Ajoute un saut de ligne manuel si besoin
-        local _, ny = mon.getCursorPos()
-        if ny == y then
-            mon.setCursorPos(1, y+1)
-        end
-    end
-end
-local function bothWrite(str)
-    termWrite(str)
-    monWrite(str)
-end
-
 -- Fonction pour dessiner l'UI sur les deux supports
 local function draw()
     -- Terminal
-    termClear()
-    pages[currentPage].draw()
-    navbar.draw(currentPage, pageNames, keypadOpen)
+    term.clear()
+    term.setCursorPos(1,1)
+    pages[currentPage].draw(term)
+    navbar.draw(currentPage, pageNames, keypadOpen, term)
     if keypadOpen then
-        keypad.draw(true)
+        keypad.draw(true, term)
     end
+
     -- Monitor
     if hasMonitor then
-        monClear()
-        if pages[currentPage].draw then
-            pages[currentPage].draw(mon)
-        end
+        mon.clear()
+        mon.setCursorPos(1,1)
+        pages[currentPage].draw(mon)
         navbar.draw(currentPage, pageNames, keypadOpen, mon)
         if keypadOpen then
             keypad.draw(true, mon)
@@ -90,8 +56,10 @@ end
 -- Gestion du clic pour les deux écrans
 local function handleClick(x, y, onMonitor)
     local w, h = term.getSize()
+    local target = term
     if onMonitor and hasMonitor then
         w, h = mon.getSize()
+        target = mon
     end
     -- NavBar (en bas)
     if y == h then

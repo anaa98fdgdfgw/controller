@@ -8,17 +8,18 @@ M.keys = {
 }
 M.x0, M.y0 = 2, 2
 
-function M.draw(open)
+function M.draw(open, target)
+    target = target or term
     if not open then return end
     for y=1,4 do
         for x=1,3 do
-            term.setCursorPos(M.x0+(x-1)*4, M.y0+(y-1)*2)
-            term.setBackgroundColor(colors.lightGray)
-            term.setTextColor(colors.black)
-            write(" "..M.keys[y][x].." ")
+            target.setCursorPos(M.x0+(x-1)*4, M.y0+(y-1)*2)
+            if target.setBackgroundColor then target.setBackgroundColor(colors.lightGray) end
+            if target.setTextColor then target.setTextColor(colors.black) end
+            target.write(" "..M.keys[y][x].." ")
         end
     end
-    term.setBackgroundColor(colors.black)
+    if target.setBackgroundColor then target.setBackgroundColor(colors.black) end
 end
 
 function M.isOnKeypad(x, y)

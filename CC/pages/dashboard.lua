@@ -6,16 +6,19 @@ M.usines = {
     {name="Usine 3", state=false, side="left"}
 }
 
-function M.draw()
-    print("=== Dashboard - Usines ===\n")
+function M.draw(target)
+    target.setCursorPos(1,2)
+    target.write("=== Dashboard - Usines ===")
     for i, usine in ipairs(M.usines) do
         local status = usine.state and "ON" or "OFF"
         local color = usine.state and colors.green or colors.red
-        term.setTextColor(color)
-        print(string.format("[%d] %s : %s", i, usine.name, status))
+        if target.setTextColor then target.setTextColor(color) end
+        target.setCursorPos(1, 2+i)
+        target.write(string.format("[%d] %s : %s", i, usine.name, status))
     end
-    term.setTextColor(colors.white)
-    print("\nCliquez sur un nom pour ON/OFF.")
+    if target.setTextColor then target.setTextColor(colors.white) end
+    target.setCursorPos(1,6)
+    target.write("Cliquez sur un nom pour ON/OFF.")
 end
 
 function M.handleClick(x, y)

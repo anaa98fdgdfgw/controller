@@ -4,30 +4,31 @@ local names = {
     "Dashboard", "Autocraft", "Turtle Map", "Turtle Analyse", "Reactor"
 }
 
-function M.draw(currentPage, pages, keypadOpen)
-    local w, h = term.getSize()
-    term.setCursorPos(1, h)
-    term.setBackgroundColor(colors.gray)
-    term.clearLine()
+function M.draw(currentPage, pages, keypadOpen, target)
+    target = target or term
+    local w, h = target.getSize()
+    target.setCursorPos(1, h)
+    if target.setBackgroundColor then target.setBackgroundColor(colors.gray) end
+    if target.clearLine then target.clearLine() end
     local pos = 1
     for i, name in ipairs(pages) do
-        term.setCursorPos(pos, h)
+        target.setCursorPos(pos, h)
         if i == currentPage then
-            term.setTextColor(colors.yellow)
-            term.setBackgroundColor(colors.blue)
+            if target.setTextColor then target.setTextColor(colors.yellow) end
+            if target.setBackgroundColor then target.setBackgroundColor(colors.blue) end
         else
-            term.setTextColor(colors.white)
-            term.setBackgroundColor(colors.gray)
+            if target.setTextColor then target.setTextColor(colors.white) end
+            if target.setBackgroundColor then target.setBackgroundColor(colors.gray) end
         end
-        write(" "..name.." ")
+        target.write(" "..name.." ")
         pos = pos + #name + 2
     end
-    term.setTextColor(colors.lime)
-    term.setBackgroundColor(colors.gray)
-    term.setCursorPos(w-11, h)
-    write(keypadOpen and "[Keypad:O]" or "[Keypad:F]")
-    term.setTextColor(colors.white)
-    term.setBackgroundColor(colors.black)
+    if target.setTextColor then target.setTextColor(colors.lime) end
+    if target.setBackgroundColor then target.setBackgroundColor(colors.gray) end
+    target.setCursorPos(w-11, h)
+    target.write(keypadOpen and "[Keypad:O]" or "[Keypad:F]")
+    if target.setTextColor then target.setTextColor(colors.white) end
+    if target.setBackgroundColor then target.setBackgroundColor(colors.black) end
 end
 
 function M.handleClick(x, currentPage, nbPages, keypadOpen)
