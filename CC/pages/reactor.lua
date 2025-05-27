@@ -1,12 +1,13 @@
--- Page 5 : contrôle Big Reactor
 local M = {}
 
 function M.draw()
-    -- TODO: Affichage et gestion du contrôle du reactor
+    print("=== Contrôle Big Reactor ===\n")
+    print("Statut : (à compléter avec l'intégration du script)")
+    print("Boutons ON/OFF, monitoring, etc.")
 end
 
 function M.handleClick(x, y)
-    -- TODO: Gestion des clics sur la page Reactor
+    -- À compléter avec la logique de gestion du reactor
 end
 
 return M
