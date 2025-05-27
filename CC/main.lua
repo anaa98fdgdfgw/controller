@@ -1,4 +1,4 @@
--- Contrôleur principal - Affichage sur le monitor derrière (si présent)
+-- Contrôleur principal - Affichage sur le monitor derrière (si présent) et gestion tactile
 
 -- Recherche du monitor derrière le PC
 local mon = peripheral.find("monitor") or peripheral.wrap("back")
@@ -65,10 +65,13 @@ end
 local function mainLoop()
     while true do
         draw()
-        local event, btn, x, y = os.pullEvent()
+        local event, p1, p2, p3 = os.pullEvent()
         if event == "mouse_click" then
-            handleClick(x, y)
-        elseif event == "char" and btn == "q" then
+            handleClick(p2, p3)
+        elseif event == "monitor_touch" then
+            -- p1 = côté du monitor, p2 = x, p3 = y
+            handleClick(p2, p3)
+        elseif event == "char" and p1 == "q" then
             break
         end
     end
