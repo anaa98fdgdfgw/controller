@@ -1,3 +1,20 @@
+-- Contrôleur principal - Affichage sur le monitor derrière (si présent)
+
+-- Recherche du monitor derrière le PC
+local mon = peripheral.find("monitor") or peripheral.wrap("back")
+if mon then
+    mon.setTextScale(1)
+    mon.clear()
+    mon.setCursorPos(1,1)
+    term.redirect(mon)
+    print("Monitor détecté derrière le PC.")
+    print("L'affichage principal sera sur ce grand écran.")
+else
+    print("Aucun monitor détecté derrière le PC.")
+    print("L'affichage restera sur le terminal de l'ordinateur.")
+end
+
+-- Importation des modules/pages
 local navbar = require("ui/navbar")
 local keypad = require("ui/keypad")
 local sync = require("network/sync")
@@ -58,3 +75,8 @@ local function mainLoop()
 end
 
 mainLoop()
+
+-- Remet la sortie sur le terminal du PC à la fin (optionnel, utile si tu veux relancer le programme)
+if mon then
+    term.restore()
+end
