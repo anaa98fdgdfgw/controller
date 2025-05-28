@@ -52,7 +52,14 @@ end
 -- Ajout dynamique des boutons de la navbar (adaptatif)
 local function drawNavbar()
     clearNavbar()
-    local w = navbar:getWidth()
+    local w = tonumber(navbar:getWidth())
+    if not w or w == 0 then
+        -- On tente de prendre la taille du frame parent (main)
+        w = tonumber(main:getWidth())
+    end
+    if not w or w == 0 then
+        w = 51 -- valeur par défaut raisonnable pour un écran standard
+    end
     local btnW = math.max(8, math.floor((w - 14) / #pageNames))
     local x = 2
     for i, name in ipairs(pageNames) do
