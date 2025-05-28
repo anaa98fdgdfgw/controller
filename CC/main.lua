@@ -37,7 +37,9 @@ navbar:setBackground(colors.gray)
 
 local function showPage(idx)
     for i, page in ipairs(pages) do
-        page:setVisible(i == idx)
+        if page then
+            page:setVisible(i == idx)
+        end
     end
 end
 
@@ -67,7 +69,8 @@ local function drawNavbar()
         btn:setText(name)
         btn:setPosition(x, 1)
         btn:setSize(btnW, 1)
-        if pages[i]:isVisible() then
+        -- Correction ici : teste si pages[i] existe avant d'appeler isVisible()
+        if pages[i] and pages[i].isVisible and pages[i]:isVisible() then
             btn:setForeground(colors.yellow):setBackground(colors.blue)
         else
             btn:setForeground(colors.white):setBackground(colors.gray)
